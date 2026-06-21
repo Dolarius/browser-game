@@ -69,11 +69,25 @@ Given that feature description, do this:
      - "Create a dashboard for analytics" → "analytics-dashboard"
      - "Fix payment processing timeout bug" → "fix-payment-timeout"
 
-2. **Branch creation** (optional, via hook):
+2. **Branch creation**:
 
-   If a `before_specify` hook ran successfully in the Pre-Execution Checks above, it will have created/switched to a git branch and output JSON containing `BRANCH_NAME` and `FEATURE_NUM`. Note these values for reference, but the branch name does **not** dictate the spec directory name.
+   This project expects every feature specification to live on a matching Git
+   feature branch. After resolving the feature directory name in step 3, derive
+   `BRANCH_NAME` from the final feature directory basename unless the user
+   explicitly provided `GIT_BRANCH_NAME`.
 
-   If the user explicitly provided `GIT_BRANCH_NAME`, pass it through to the hook so the branch script uses the exact value as the branch name (bypassing all prefix/suffix generation).
+   - If the current branch already equals `BRANCH_NAME`, continue.
+   - If a local branch named `BRANCH_NAME` already exists, run `git switch BRANCH_NAME`.
+   - Otherwise run `git switch -c BRANCH_NAME`.
+   - If branch creation or switching fails because Git cannot write to `.git`,
+     retry with elevated permissions and explain that Git refs must be updated.
+   - Do not delete, reset, stash, or overwrite working tree changes.
+
+   Use `BRANCH_NAME` in the generated spec's **Feature Branch** field.
+
+   If the user explicitly provided `GIT_BRANCH_NAME`, use that exact value as
+   the branch name, but keep the spec directory generated from the feature
+   short name unless the user also provided `SPECIFY_FEATURE_DIRECTORY`.
 
 3. **Create the spec feature directory**:
 
@@ -105,7 +119,7 @@ Given that feature description, do this:
 
    **IMPORTANT**:
    - You must only create one feature per `/speckit-specify` invocation
-   - The spec directory name and the git branch name are independent — they may be the same but that is the user's choice
+   - The spec directory name and the git branch name are independent, but this project defaults to using the same basename for both for clarity
    - The spec directory and file are always created by this command, never by the hook
 
 4. Load the resolved active `spec-template` file to understand required sections.
