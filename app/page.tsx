@@ -1,7 +1,9 @@
+import { DailyWordleGame } from "@/components/wordle/DailyWordleGame";
+
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      hello
-    </div>
+    <main className="flex min-h-dvh flex-1 items-center justify-center bg-page px-3 py-4 text-page-foreground sm:px-6">
+      <DailyWordleGame />
+    </main>
   );
 }

@@ -1,26 +1,77 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f7f2;
+  --foreground: #18201a;
+  --page: #f5f7f2;
+  --page-foreground: #18201a;
+  --surface: #ffffff;
+  --surface-muted: #eef2ea;
+  --surface-border: #c7d0c0;
+  --tile-empty: #f8faf5;
+  --tile-active: #ffffff;
+  --tile-correct: #3f7d52;
+  --tile-present: #b98326;
+  --tile-absent: #6b7280;
+  --key: #dce4d6;
+  --key-foreground: #18201a;
+  --focus: #2563eb;
+  --danger: #b42318;
+  --success: #2d6a4f;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-page: var(--page);
+  --color-page-foreground: var(--page-foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-border: var(--surface-border);
+  --color-tile-empty: var(--tile-empty);
+  --color-tile-active: var(--tile-active);
+  --color-tile-correct: var(--tile-correct);
+  --color-tile-present: var(--tile-present);
+  --color-tile-absent: var(--tile-absent);
+  --color-key: var(--key);
+  --color-key-foreground: var(--key-foreground);
+  --color-focus: var(--focus);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #111611;
+    --foreground: #f4f7ef;
+    --page: #111611;
+    --page-foreground: #f4f7ef;
+    --surface: #1b241d;
+    --surface-muted: #263127;
+    --surface-border: #4b5b4d;
+    --tile-empty: #18201a;
+    --tile-active: #253128;
+    --key: #344238;
+    --key-foreground: #f4f7ef;
+    --danger: #ffb4ab;
+    --success: #9ad5af;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
 }
