@@ -18,12 +18,12 @@
 
 **Purpose**: Establish feature folders, bundled word data, theme tokens, and page shell.
 
-- [ ] T001 Create feature directories `components/wordle/`, `lib/wordle/`, and `data/words/`
-- [ ] T002 Replace default home placeholder in `app/page.tsx` with a shell that renders `components/wordle/DailyWordleGame.tsx`
-- [ ] T003 Update `app/layout.tsx` metadata title and description for the offline daily word game
-- [ ] T004 Define Tailwind `@theme` color tokens for page, tile, keyboard, result, and focus states in `app/globals.css`
-- [ ] T005 Create bundled curated answer words in `data/words/answers.ts`
-- [ ] T006 Create bundled allowed guess words in `data/words/allowed-guesses.ts`
+- [X] T001 Create feature directories `components/wordle/`, `lib/wordle/`, and `data/words/`
+- [X] T002 Replace default home placeholder in `app/page.tsx` with a shell that renders `components/wordle/DailyWordleGame.tsx`
+- [X] T003 Update `app/layout.tsx` metadata title and description for the offline daily word game
+- [X] T004 Define Tailwind `@theme` color tokens for page, tile, keyboard, result, and focus states in `app/globals.css`
+- [X] T005 Create bundled curated answer words in `data/words/answers.ts`
+- [X] T006 Create bundled allowed guess words in `data/words/allowed-guesses.ts`
 
 ---
 
@@ -33,13 +33,13 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T007 Define shared TypeScript types for profile, puzzle state, guesses, tile feedback, keyboard feedback, and storage failures in `lib/wordle/types.ts`
-- [ ] T008 Implement local date key and display date helpers using native `Date` and `Intl.DateTimeFormat` in `lib/wordle/date.ts`
-- [ ] T009 Implement word list normalization, answer selection, and allowed-guess lookup helpers in `lib/wordle/words.ts`
-- [ ] T010 Implement duplicate-letter-aware tile feedback calculation in `lib/wordle/feedback.ts`
-- [ ] T011 Implement daily puzzle initialization, guess submission, win/loss transitions, and completed-puzzle guard logic in `lib/wordle/game-state.ts`
-- [ ] T012 Implement safe `localStorage` read/write/remove helpers with unavailable-storage detection in `lib/wordle/storage.ts`
-- [ ] T013 Create the client orchestrator component skeleton in `components/wordle/DailyWordleGame.tsx`
+- [X] T007 Define shared TypeScript types for profile, puzzle state, guesses, tile feedback, keyboard feedback, and storage failures in `lib/wordle/types.ts`
+- [X] T008 Implement local date key and display date helpers using native `Date` and `Intl.DateTimeFormat` in `lib/wordle/date.ts`
+- [X] T009 Implement word list normalization, answer selection, and allowed-guess lookup helpers in `lib/wordle/words.ts`
+- [X] T010 Implement duplicate-letter-aware tile feedback calculation in `lib/wordle/feedback.ts`
+- [X] T011 Implement daily puzzle initialization, guess submission, win/loss transitions, and completed-puzzle guard logic in `lib/wordle/game-state.ts`
+- [X] T012 Implement safe `localStorage` read/write/remove helpers with unavailable-storage detection in `lib/wordle/storage.ts`
+- [X] T013 Create the client orchestrator component skeleton in `components/wordle/DailyWordleGame.tsx`
 
 **Checkpoint**: Pure helpers and the client orchestrator shell exist, and user story components can consume stable types and state helpers.
 
@@ -53,12 +53,12 @@
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Build compact nickname form UI with accessible label, submit button, and validation message in `components/wordle/NicknameForm.tsx`
-- [ ] T015 [US1] Add built-in nickname validation for trim, required value, and 20-character max length in `components/wordle/NicknameForm.tsx`
-- [ ] T016 [US1] Add single active profile load/save flow in `components/wordle/DailyWordleGame.tsx` using `lib/wordle/storage.ts`
-- [ ] T017 [US1] Add local-storage-unavailable screen state in `components/wordle/DailyWordleGame.tsx`
-- [ ] T018 [US1] Connect `app/page.tsx` to show the profile gate before the game when no profile exists
-- [ ] T019 [US1] Manually validate first-time profile gate, invalid nickname feedback, successful nickname save, and no password/auth prompts using `specs/001-daily-wordle-game/quickstart.md`
+- [X] T014 [P] [US1] Build compact nickname form UI with accessible label, submit button, and validation message in `components/wordle/NicknameForm.tsx`
+- [X] T015 [US1] Add built-in nickname validation for trim, required value, and 20-character max length in `components/wordle/NicknameForm.tsx`
+- [X] T016 [US1] Add single active profile load/save flow in `components/wordle/DailyWordleGame.tsx` using `lib/wordle/storage.ts`
+- [X] T017 [US1] Add local-storage-unavailable screen state in `components/wordle/DailyWordleGame.tsx`
+- [X] T018 [US1] Connect `app/page.tsx` to show the profile gate before the game when no profile exists
+- [X] T019 [US1] Manually validate first-time profile gate, invalid nickname feedback, successful nickname save, and no password/auth prompts using `specs/001-daily-wordle-game/quickstart.md`
 
 **Checkpoint**: A first-time player can create a local profile and reach the game shell independently.
 
@@ -72,15 +72,15 @@
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Build responsive six-row, five-column guess grid with empty, active, correct, present, and absent states in `components/wordle/GuessGrid.tsx`
-- [ ] T021 [P] [US2] Build on-screen keyboard with letter keys, Delete, Submit, and feedback states in `components/wordle/Keyboard.tsx`
-- [ ] T022 [P] [US2] Build compact game header with title, display date, and stats button placeholder trigger in `components/wordle/GameHeader.tsx`
-- [ ] T023 [P] [US2] Build concise win/loss result panel that keeps the completed board visible in `components/wordle/ResultPanel.tsx`
-- [ ] T024 [US2] Wire daily answer selection, active row input, valid guess submission, and error messages in `components/wordle/DailyWordleGame.tsx`
-- [ ] T025 [US2] Add physical keyboard handling for letters, Backspace/Delete, and Enter in `components/wordle/DailyWordleGame.tsx`
-- [ ] T026 [US2] Apply board and keyboard tile feedback from `lib/wordle/feedback.ts` in `components/wordle/DailyWordleGame.tsx`
-- [ ] T027 [US2] Block invalid guesses, too-short guesses, too-long input, and guesses after win/loss in `components/wordle/DailyWordleGame.tsx`
-- [ ] T028 [US2] Manually validate daily puzzle input, invalid feedback, tile feedback, win state, and loss state using `specs/001-daily-wordle-game/quickstart.md`
+- [X] T020 [P] [US2] Build responsive six-row, five-column guess grid with empty, active, correct, present, and absent states in `components/wordle/GuessGrid.tsx`
+- [X] T021 [P] [US2] Build on-screen keyboard with letter keys, Delete, Submit, and feedback states in `components/wordle/Keyboard.tsx`
+- [X] T022 [P] [US2] Build compact game header with title, display date, and stats button placeholder trigger in `components/wordle/GameHeader.tsx`
+- [X] T023 [P] [US2] Build concise win/loss result panel that keeps the completed board visible in `components/wordle/ResultPanel.tsx`
+- [X] T024 [US2] Wire daily answer selection, active row input, valid guess submission, and error messages in `components/wordle/DailyWordleGame.tsx`
+- [X] T025 [US2] Add physical keyboard handling for letters, Backspace/Delete, and Enter in `components/wordle/DailyWordleGame.tsx`
+- [X] T026 [US2] Apply board and keyboard tile feedback from `lib/wordle/feedback.ts` in `components/wordle/DailyWordleGame.tsx`
+- [X] T027 [US2] Block invalid guesses, too-short guesses, too-long input, and guesses after win/loss in `components/wordle/DailyWordleGame.tsx`
+- [X] T028 [US2] Manually validate daily puzzle input, invalid feedback, tile feedback, win state, and loss state using `specs/001-daily-wordle-game/quickstart.md`
 
 **Checkpoint**: A returning player can complete the daily puzzle independently.
 
@@ -94,11 +94,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T029 [US3] Persist daily puzzle state after each accepted guess and completion transition in `components/wordle/DailyWordleGame.tsx`
-- [ ] T030 [US3] Restore existing daily puzzle state by `dateKey` on app load in `components/wordle/DailyWordleGame.tsx`
-- [ ] T031 [US3] Initialize a new daily puzzle when the local date key changes in `components/wordle/DailyWordleGame.tsx`
-- [ ] T032 [US3] Preserve completed won/lost state and block additional daily guesses after refresh in `components/wordle/DailyWordleGame.tsx`
-- [ ] T033 [US3] Manually validate refresh persistence, completed-state restoration, and new-date initialization behavior using `specs/001-daily-wordle-game/quickstart.md`
+- [X] T029 [US3] Persist daily puzzle state after each accepted guess and completion transition in `components/wordle/DailyWordleGame.tsx`
+- [X] T030 [US3] Restore existing daily puzzle state by `dateKey` on app load in `components/wordle/DailyWordleGame.tsx`
+- [X] T031 [US3] Initialize a new daily puzzle when the local date key changes in `components/wordle/DailyWordleGame.tsx`
+- [X] T032 [US3] Preserve completed won/lost state and block additional daily guesses after refresh in `components/wordle/DailyWordleGame.tsx`
+- [X] T033 [US3] Manually validate refresh persistence, completed-state restoration, and new-date initialization behavior using `specs/001-daily-wordle-game/quickstart.md`
 
 **Checkpoint**: Daily progress is reliable across refreshes and browser restarts.
 
@@ -112,10 +112,10 @@
 
 ### Implementation for User Story 4
 
-- [ ] T034 [P] [US4] Build stats placeholder UI with clear message and close action in `components/wordle/StatsPlaceholder.tsx`
-- [ ] T035 [US4] Connect stats button open/close state between `components/wordle/GameHeader.tsx`, `components/wordle/DailyWordleGame.tsx`, and `components/wordle/StatsPlaceholder.tsx`
-- [ ] T036 [US4] Confirm the stats placeholder displays no fabricated totals, streaks, win rates, or guess distributions in `components/wordle/StatsPlaceholder.tsx`
-- [ ] T037 [US4] Manually validate stats button discoverability, placeholder content, and close behavior using `specs/001-daily-wordle-game/quickstart.md`
+- [X] T034 [P] [US4] Build stats placeholder UI with clear message and close action in `components/wordle/StatsPlaceholder.tsx`
+- [X] T035 [US4] Connect stats button open/close state between `components/wordle/GameHeader.tsx`, `components/wordle/DailyWordleGame.tsx`, and `components/wordle/StatsPlaceholder.tsx`
+- [X] T036 [US4] Confirm the stats placeholder displays no fabricated totals, streaks, win rates, or guess distributions in `components/wordle/StatsPlaceholder.tsx`
+- [X] T037 [US4] Manually validate stats button discoverability, placeholder content, and close behavior using `specs/001-daily-wordle-game/quickstart.md`
 
 **Checkpoint**: The stats entry point exists without expanding scope into detailed statistics.
 
@@ -125,14 +125,14 @@
 
 **Purpose**: Responsive, accessibility, theme, documentation, and allowed validation passes across all stories.
 
-- [ ] T038 [P] Refine page-level layout, background, typography, and responsive spacing in `app/page.tsx`
-- [ ] T039 [P] Refine global theme tokens, focus styles, and color contrast in `app/globals.css`
-- [ ] T040 Add accessible names, live-region messaging, and non-color-only tile feedback labels across `components/wordle/GuessGrid.tsx`, `components/wordle/Keyboard.tsx`, and `components/wordle/DailyWordleGame.tsx`
-- [ ] T041 Confirm no new dependencies were added to `package.json` or `package-lock.json`
-- [ ] T042 Run allowed lint validation with `npm run lint` using the script declared in `package.json`
-- [ ] T043 Run allowed production build validation with `npm run build` using the script declared in `package.json`
-- [ ] T044 Manually inspect mobile and desktop layouts for overlap, clipped text, horizontal scrolling, and touch target usability using `specs/001-daily-wordle-game/quickstart.md`
-- [ ] T045 Update `README.md` with local run instructions and a short no-backend/no-database feature note
+- [X] T038 [P] Refine page-level layout, background, typography, and responsive spacing in `app/page.tsx`
+- [X] T039 [P] Refine global theme tokens, focus styles, and color contrast in `app/globals.css`
+- [X] T040 Add accessible names, live-region messaging, and non-color-only tile feedback labels across `components/wordle/GuessGrid.tsx`, `components/wordle/Keyboard.tsx`, and `components/wordle/DailyWordleGame.tsx`
+- [X] T041 Confirm no new dependencies were added to `package.json` or `package-lock.json`
+- [X] T042 Run allowed lint validation with `npm run lint` using the script declared in `package.json`
+- [X] T043 Run allowed production build validation with `npm run build` using the script declared in `package.json`
+- [X] T044 Manually inspect mobile and desktop layouts for overlap, clipped text, horizontal scrolling, and touch target usability using `specs/001-daily-wordle-game/quickstart.md`
+- [X] T045 Update `README.md` with local run instructions and a short no-backend/no-database feature note
 
 ---
 

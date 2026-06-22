@@ -1,24 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Browser Game
+
+A Next.js browser game project. The home screen is an offline daily
+Wordle-style five-letter puzzle with one local nickname profile, bundled word
+lists, on-screen and physical keyboard input, daily progress persistence, and a
+stats placeholder.
+
+The game has no backend, database, login, remote sync, or paid service
+dependency. Profile and puzzle progress are stored in this browser only.
+
+The expanded allowed-guess list was generated from Datamuse `/words` pattern
+queries, filtered, and bundled with the app so gameplay does not call the
+network at runtime.
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies from the existing lockfile, then run the development
+server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Allowed validation commands:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run build
+```
 
 ## Learn More
 
