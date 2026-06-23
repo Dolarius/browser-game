@@ -3,10 +3,9 @@ const APP_SHELL_CACHE = `${CACHE_VERSION}:app-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}:static`;
 const CACHE_NAMES = new Set([APP_SHELL_CACHE, STATIC_CACHE]);
 
-const APP_SHELL_URLS = [
-  "/",
-  "/offline",
-  "/manifest.webmanifest",
+const REQUIRED_APP_SHELL_URLS = ["/", "/offline", "/manifest.webmanifest"];
+
+const OPTIONAL_APP_SHELL_URLS = [
   "/favicon.ico",
   "/file.svg",
   "/globe.svg",
@@ -15,17 +14,29 @@ const APP_SHELL_URLS = [
   "/window.svg",
 ];
 
+const APP_SHELL_URLS = new Set([
+  ...REQUIRED_APP_SHELL_URLS,
+  ...OPTIONAL_APP_SHELL_URLS,
+]);
+
+const REQUIRED_CACHE_REQUESTS = REQUIRED_APP_SHELL_URLS.map(
+  (url) => new Request(url, { cache: "reload" }),
+);
+
+const OPTIONAL_CACHE_REQUESTS = OPTIONAL_APP_SHELL_URLS.map(
+  (url) => new Request(url, { cache: "reload" }),
+);
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(APP_SHELL_CACHE)
-      .then((cache) =>
-        Promise.all(
-          APP_SHELL_URLS.map((url) =>
-            cache.add(new Request(url, { cache: "reload" })).catch(() => null),
-          ),
-        ),
-      )
+      .then(async (cache) => {
+        await cache.addAll(REQUIRED_CACHE_REQUESTS);
+        await Promise.allSettled(
+          OPTIONAL_CACHE_REQUESTS.map((request) => cache.add(request)),
+        );
+      })
       .then(() => self.skipWaiting()),
   );
 });
@@ -36,11 +47,16 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((cacheNames) =>
         Promise.all(
-          cacheNames.map((cacheName) =>
-            CACHE_NAMES.has(cacheName) || !cacheName.startsWith("daily-wordle-")
-              ? Promise.resolve(false)
-              : caches.delete(cacheName),
-          ),
+          cacheNames.map((cacheName) => {
+            if (
+              CACHE_NAMES.has(cacheName) ||
+              !cacheName.startsWith("daily-wordle-")
+            ) {
+              return Promise.resolve(false);
+            }
+
+            return caches.delete(cacheName);
+          }),
         ),
       )
       .then(() => self.clients.claim()),
@@ -70,7 +86,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (APP_SHELL_URLS.includes(url.pathname)) {
+  if (APP_SHELL_URLS.has(url.pathname)) {
     event.respondWith(networkFirst(request, APP_SHELL_CACHE));
   }
 });
@@ -99,13 +115,15 @@ self.addEventListener("message", (event) => {
   }
 
   event.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) =>
-      Promise.all(
-        staticUrls.map((url) =>
-          cache.add(new Request(url, { cache: "reload" })).catch(() => null),
+    caches
+      .open(STATIC_CACHE)
+      .then((cache) =>
+        Promise.allSettled(
+          staticUrls.map((url) =>
+            cache.add(new Request(url, { cache: "reload" })),
+          ),
         ),
       ),
-    ),
   );
 });
 
@@ -146,7 +164,8 @@ async function handleNavigation(request) {
 }
 
 async function cacheFirst(request, cacheName) {
-  const cachedResponse = await caches.match(request);
+  const cache = await caches.open(cacheName);
+  const cachedResponse = await cache.match(request);
 
   if (cachedResponse) {
     return cachedResponse;
@@ -155,7 +174,6 @@ async function cacheFirst(request, cacheName) {
   const response = await fetch(request);
 
   if (response.ok) {
-    const cache = await caches.open(cacheName);
     await cache.put(request, response.clone());
   }
 
@@ -163,17 +181,18 @@ async function cacheFirst(request, cacheName) {
 }
 
 async function networkFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+
   try {
     const response = await fetch(request);
 
     if (response.ok) {
-      const cache = await caches.open(cacheName);
       await cache.put(request, response.clone());
     }
 
     return response;
   } catch {
-    const cachedResponse = await caches.match(request);
+    const cachedResponse = await cache.match(request);
 
     if (cachedResponse) {
       return cachedResponse;
