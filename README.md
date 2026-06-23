@@ -30,6 +30,34 @@ npm run lint
 npm run build
 ```
 
+## Offline Reload Validation
+
+Offline reload support is active only in production builds. To validate it,
+run `npm run build`, then `npm run start`, and open
+[http://localhost:3000](http://localhost:3000). Create or use a local nickname,
+submit at least one valid guess, then set the browser network state to Offline
+in DevTools and refresh the page in the same browser session. The game should
+load from saved files and restore the nickname, guesses, tile feedback, and
+current puzzle state from this browser's local storage.
+
+Normal development mode should stay uncached. After clearing prior localhost
+site data where practical, run `npm run dev`, open
+[http://localhost:3000](http://localhost:3000), and confirm the browser did not
+register this feature's service worker. Development refreshes should show local
+edits without being hidden by offline cached app files.
+
+If an offline reload is attempted before the game shell has been saved, the
+browser should show the simple `/offline` fallback instead of a blank page or a
+network error.
+
+## Offline Cache Maintenance
+
+The service worker uses a manually maintained cache version string in
+`public/sw.js`. Bump `daily-wordle-v1` whenever offline caching behavior,
+offline fallback behavior, manifest metadata, or cached app-shell/static asset
+expectations change. The activation step removes older Daily Wordle cache
+groups after a new version takes control.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
