@@ -51,7 +51,7 @@
 - [X] T012 [US1] Update statistics only when a submitted guess changes the current daily puzzle into a completed win or loss in `/Users/alexvrabie/Sites/browser-game/components/wordle/DailyWordleGame.tsx`
 - [X] T013 [US1] Persist updated statistics after a newly completed puzzle using `/Users/alexvrabie/Sites/browser-game/lib/wordle/storage.ts` from `/Users/alexvrabie/Sites/browser-game/components/wordle/DailyWordleGame.tsx`
 - [X] T014 [US1] Ensure already-completed puzzle state loaded from localStorage is not backfilled into statistics in `/Users/alexvrabie/Sites/browser-game/components/wordle/DailyWordleGame.tsx`
-- [ ] T015 [US1] Manually validate first new completed win, first new completed loss, and existing solved puzzle no-backfill behavior using `/Users/alexvrabie/Sites/browser-game/specs/003-local-player-stats/quickstart.md`
+- [X] T015 [US1] Manually validate first new completed win, first new completed loss, and existing solved puzzle no-backfill behavior using `/Users/alexvrabie/Sites/browser-game/specs/003-local-player-stats/quickstart.md`
 
 **Checkpoint**: New post-feature completions update local aggregate stats once from the gameplay flow.
 
@@ -67,7 +67,7 @@
 - [X] T017 [US2] Preserve `lastCountedDateKey` across refresh and app reload through `/Users/alexvrabie/Sites/browser-game/lib/wordle/storage.ts`
 - [X] T018 [US2] Implement consecutive local calendar-day win streak handling in `/Users/alexvrabie/Sites/browser-game/lib/wordle/stats.ts`, including skipped-day break and win-after-skip restart at one
 - [X] T019 [US2] Ensure losses reset `currentStreak` and do not update guess distribution in `/Users/alexvrabie/Sites/browser-game/lib/wordle/stats.ts`
-- [ ] T020 [US2] Manually validate refresh/reopen duplicate prevention, next-day counting, skipped-day streak restart, and loss streak reset using `/Users/alexvrabie/Sites/browser-game/specs/003-local-player-stats/quickstart.md`
+- [X] T020 [US2] Manually validate refresh/reopen duplicate prevention, next-day counting, skipped-day streak restart, and loss streak reset using `/Users/alexvrabie/Sites/browser-game/specs/003-local-player-stats/quickstart.md`
 
 **Checkpoint**: Each daily date is counted at most once and streaks match the local calendar-day rules.
 
@@ -99,8 +99,8 @@
 - [X] T027 [US4] Ensure statistics are associated with the existing single local nickname profile flow in `/Users/alexvrabie/Sites/browser-game/components/wordle/DailyWordleGame.tsx`
 - [X] T028 [US4] Ensure statistics remain browser-local and use only localStorage helpers in `/Users/alexvrabie/Sites/browser-game/lib/wordle/storage.ts`
 - [X] T029 [US4] Confirm no reset controls, profile switching, history, sharing, leaderboard, auth, backend, sync, analytics, external API, or paid-service UI is introduced in `/Users/alexvrabie/Sites/browser-game/components/wordle/StatsPlaceholder.tsx`
-- [ ] T030 [US4] Manually validate stats persistence across refresh and existing PWA offline reload using `/Users/alexvrabie/Sites/browser-game/specs/003-local-player-stats/quickstart.md`
-- [ ] T031 [US4] Manually validate that clearing browser site data may remove profile, puzzle progress, and statistics using `/Users/alexvrabie/Sites/browser-game/specs/003-local-player-stats/quickstart.md`
+- [X] T030 [US4] Manually validate stats persistence across refresh and existing PWA offline reload using `/Users/alexvrabie/Sites/browser-game/specs/003-local-player-stats/quickstart.md`
+- [X] T031 [US4] Manually validate that clearing browser site data may remove profile, puzzle progress, and statistics using `/Users/alexvrabie/Sites/browser-game/specs/003-local-player-stats/quickstart.md`
 
 **Checkpoint**: Local stats behave consistently with the existing local-only PWA model.
 
@@ -114,7 +114,7 @@
 - [X] T033 [P] Review `/Users/alexvrabie/Sites/browser-game/components/wordle/StatsPlaceholder.tsx` for responsive layout, readable labels, and no clipped or overlapping values
 - [X] T034 Run `npm run lint` from `/Users/alexvrabie/Sites/browser-game`
 - [X] T035 Run `npm run build` from `/Users/alexvrabie/Sites/browser-game`
-- [ ] T036 Perform the full manual validation checklist in `/Users/alexvrabie/Sites/browser-game/specs/003-local-player-stats/quickstart.md`
+- [X] T036 Perform the full manual validation checklist in `/Users/alexvrabie/Sites/browser-game/specs/003-local-player-stats/quickstart.md`
 
 ---
 
