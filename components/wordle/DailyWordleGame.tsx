@@ -9,16 +9,20 @@ import {
   submitGuess,
   WORD_LENGTH,
 } from "@/lib/wordle/game-state";
+import { createDefaultStats, updateLocalPlayerStats } from "@/lib/wordle/stats";
 import {
   canUseLocalStorage,
   readDailyPuzzle,
+  readLocalPlayerStats,
   readProfile,
   saveDailyPuzzle,
+  saveLocalPlayerStats,
   saveProfile,
 } from "@/lib/wordle/storage";
 import type {
   DailyPuzzleState,
   LocalPlayerProfile,
+  LocalPlayerStats,
   StorageFailure,
 } from "@/lib/wordle/types";
 import { GameHeader } from "./GameHeader";
@@ -35,6 +39,7 @@ export function DailyWordleGame() {
   const [storageError, setStorageError] = useState<StorageFailure | null>(null);
   const [profile, setProfile] = useState<LocalPlayerProfile | null>(null);
   const [puzzle, setPuzzle] = useState<DailyPuzzleState | null>(null);
+  const [stats, setStats] = useState<LocalPlayerStats>(createDefaultStats);
   const [activeGuess, setActiveGuess] = useState("");
   const [message, setMessage] = useState("");
   const [isStatsOpen, setIsStatsOpen] = useState(false);
@@ -67,6 +72,15 @@ export function DailyWordleGame() {
       setProfile(profileResult.value);
 
       if (profileResult.value) {
+        const statsResult = readLocalPlayerStats();
+        if (!statsResult.ok) {
+          setStorageError(statsResult.error);
+          setLoadState("storage-error");
+          return;
+        }
+
+        setStats(statsResult.value ?? createDefaultStats());
+
         const puzzleResult = readDailyPuzzle(dateKey);
         if (!puzzleResult.ok) {
           setStorageError(puzzleResult.error);
@@ -164,6 +178,23 @@ export function DailyWordleGame() {
       return;
     }
 
+    if (puzzle.status === "playing" && result.state.status !== "playing") {
+      const nextStats = updateLocalPlayerStats(stats, {
+        dateKey: result.state.dateKey,
+        status: result.state.status,
+        guessCount: result.state.guesses.length,
+        completedAt: result.state.completedAt ?? new Date().toISOString(),
+      });
+      const statsResult = saveLocalPlayerStats(nextStats);
+      if (!statsResult.ok) {
+        setStorageError(statsResult.error);
+        setLoadState("storage-error");
+        return;
+      }
+
+      setStats(nextStats);
+    }
+
     setPuzzle(result.state);
     setActiveGuess("");
     setMessage(
@@ -173,7 +204,7 @@ export function DailyWordleGame() {
           ? `The answer was ${result.state.answer}.`
           : "Guess accepted.",
     );
-  }, [activeGuess, puzzle]);
+  }, [activeGuess, puzzle, stats]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -268,7 +299,10 @@ export function DailyWordleGame() {
         onSubmit={submitActiveGuess}
       />
       {isStatsOpen ? (
-        <StatsPlaceholder onClose={() => setIsStatsOpen(false)} />
+        <StatsPlaceholder
+          onClose={() => setIsStatsOpen(false)}
+          stats={stats}
+        />
       ) : null}
     </section>
   );

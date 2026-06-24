@@ -1,6 +1,12 @@
-import type { DailyPuzzleState, LocalPlayerProfile, StorageFailure } from "./types";
+import type {
+  DailyPuzzleState,
+  LocalPlayerProfile,
+  LocalPlayerStats,
+  StorageFailure,
+} from "./types";
 
 export const PROFILE_STORAGE_KEY = "wordle:profile";
+export const STATS_STORAGE_KEY = "wordle:stats";
 
 type StorageResult<T> =
   | { ok: true; value: T }
@@ -108,4 +114,14 @@ export function readDailyPuzzle(
 
 export function saveDailyPuzzle(state: DailyPuzzleState): StorageResult<true> {
   return writeJson(dailyPuzzleStorageKey(state.dateKey), state);
+}
+
+export function readLocalPlayerStats(): StorageResult<LocalPlayerStats | null> {
+  return readJson<LocalPlayerStats>(STATS_STORAGE_KEY);
+}
+
+export function saveLocalPlayerStats(
+  stats: LocalPlayerStats,
+): StorageResult<true> {
+  return writeJson(STATS_STORAGE_KEY, stats);
 }

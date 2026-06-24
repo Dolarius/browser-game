@@ -25,6 +25,25 @@ export type DailyPuzzleState = {
   completedAt: string | null;
 };
 
+export type GuessDistribution = [number, number, number, number, number, number];
+
+export type LocalPlayerStats = {
+  gamesPlayed: number;
+  wins: number;
+  losses: number;
+  currentStreak: number;
+  maxStreak: number;
+  guessDistribution: GuessDistribution;
+  lastCountedDateKey: string | null;
+};
+
+export type CountedDailyResult = {
+  dateKey: string;
+  status: Exclude<PuzzleStatus, "playing">;
+  guessCount: number;
+  completedAt: string;
+};
+
 export type StorageFailure = {
   kind: "unavailable" | "parse" | "write";
   message: string;
