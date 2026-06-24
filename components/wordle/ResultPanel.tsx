@@ -13,7 +13,6 @@ export function ResultPanel({ puzzle }: ResultPanelProps) {
 
   return (
     <section
-      aria-live="polite"
       className="w-full rounded-lg border border-surface-border bg-surface p-4 text-center shadow-sm"
     >
       <h2 className="text-lg font-black">{won ? "Solved" : "Puzzle complete"}</h2>

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import type { LocalPlayerStats } from "@/lib/wordle/types";
 
 type StatsPlaceholderProps = {
@@ -8,19 +9,68 @@ type StatsPlaceholderProps = {
 const DISTRIBUTION_LABELS = ["1", "2", "3", "4", "5", "6"] as const;
 
 export function StatsPlaceholder({ onClose, stats }: StatsPlaceholderProps) {
+  const dialogRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const maxBucket = Math.max(...stats.guessDistribution, 1);
   const isEmpty = stats.gamesPlayed === 0;
+
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab" || !dialogRef.current) {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => !element.hasAttribute("disabled"));
+
+      if (focusableElements.length === 0) {
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   return (
     <div
       aria-modal="true"
       className="fixed inset-0 z-10 grid place-items-center bg-black/45 px-3 py-4"
+      aria-labelledby="stats-title"
       role="dialog"
     >
-      <section className="max-h-full w-full max-w-lg overflow-y-auto rounded-lg border border-surface-border bg-surface p-5 text-page-foreground shadow-xl">
+      <section
+        className="max-h-full w-full max-w-lg overflow-y-auto rounded-lg border border-surface-border bg-surface p-5 text-page-foreground shadow-xl"
+        ref={dialogRef}
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-black">Stats</h2>
+            <h2 className="text-lg font-black" id="stats-title">
+              Stats
+            </h2>
             {isEmpty ? (
               <p className="mt-2 text-sm leading-6 text-page-foreground/75">
                 New completed games will appear here.
@@ -29,7 +79,8 @@ export function StatsPlaceholder({ onClose, stats }: StatsPlaceholderProps) {
           </div>
           <button
             aria-label="Close stats"
-            className="h-10 rounded-md bg-page-foreground px-3 text-sm font-bold uppercase text-page"
+            className="game-control h-10 rounded-md bg-page-foreground px-3 text-sm font-bold uppercase text-page"
+            ref={closeButtonRef}
             onClick={onClose}
             type="button"
           >

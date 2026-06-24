@@ -3,8 +3,8 @@
 export const ANSWER_WORDS: readonly string[] = [
   'order', 'guess', 'scene', 'phone', 'sweet', 'color', 'ready', 'bench',
   'dance', 'super', 'cable', 'novel', 'image', 'usual', 'chase', 'anger',
-  'motor', 'earth', 'theme', 'truth', 'alike', 'alone', 'price', 'those',
-  'valid', 'sight', 'bread', 'joint', 'scale', 'value', 'would', 'fruit',
+  'motor', 'earth', 'theme', 'truth', 'alike', 'fruit', 'price', 'those',
+  'valid', 'sight', 'bread', 'joint', 'scale', 'value', 'would', 'alone',
   'watch', 'short', 'about', 'later', 'cause', 'train', 'layer', 'there',
   'touch', 'pitch', 'logic', 'error', 'offer', 'storm', 'brown', 'again',
   'radio', 'table', 'level', 'tower', 'block', 'start', 'ocean', 'wrong',

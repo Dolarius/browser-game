@@ -39,6 +39,8 @@ export function NicknameForm({ onSave }: NicknameFormProps) {
           Nickname
         </label>
         <input
+          aria-describedby="nickname-feedback"
+          autoComplete="nickname"
           className="h-12 w-full rounded-md border border-surface-border bg-tile-active px-3 text-base text-page-foreground shadow-inner"
           id="nickname"
           maxLength={40}
@@ -47,11 +49,15 @@ export function NicknameForm({ onSave }: NicknameFormProps) {
           value={nickname}
         />
       </div>
-      <p aria-live="polite" className="mt-3 min-h-6 text-sm text-danger">
+      <p
+        aria-live="polite"
+        className="mt-3 min-h-6 text-sm text-danger"
+        id="nickname-feedback"
+      >
         {message}
       </p>
       <button
-        className="mt-3 h-12 w-full rounded-md bg-page-foreground px-4 text-sm font-bold uppercase tracking-wide text-page transition hover:opacity-90"
+        className="game-control mt-3 h-12 w-full rounded-md bg-page-foreground px-4 text-sm font-bold uppercase tracking-wide text-page transition hover:opacity-90"
         type="submit"
       >
         Start

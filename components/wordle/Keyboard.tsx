@@ -1,6 +1,7 @@
 import type { KeyboardFeedback, TileFeedback } from "@/lib/wordle/types";
 
 type KeyboardProps = {
+  disabled?: boolean;
   feedback: KeyboardFeedback;
   onDelete: () => void;
   onLetter: (letter: string) => void;
@@ -24,6 +25,7 @@ function keyClassName(value: string, feedback: KeyboardFeedback): string {
 }
 
 export function Keyboard({
+  disabled = false,
   feedback,
   onDelete,
   onLetter,
@@ -35,7 +37,9 @@ export function Keyboard({
         <div className="flex justify-center gap-1" key={row}>
           {rowIndex === 2 ? (
             <button
-              className="h-12 min-w-12 rounded-md bg-page-foreground px-1 text-xs font-black uppercase text-page"
+              aria-label="Submit guess"
+              className="game-control h-12 min-w-12 rounded-md bg-page-foreground px-1 text-xs font-black uppercase text-page"
+              disabled={disabled}
               onClick={onSubmit}
               type="button"
             >
@@ -45,7 +49,8 @@ export function Keyboard({
           {row.split("").map((letter) => (
             <button
               aria-label={`Letter ${letter}${feedback[letter] ? `, ${feedback[letter]}` : ""}`}
-              className={`h-12 flex-1 rounded-md px-1 text-sm font-black uppercase transition sm:text-base ${keyClassName(letter, feedback)}`}
+              className={`game-control h-12 flex-1 rounded-md px-1 text-sm font-black uppercase transition sm:text-base ${keyClassName(letter, feedback)}`}
+              disabled={disabled}
               key={letter}
               onClick={() => onLetter(letter)}
               type="button"
@@ -55,7 +60,9 @@ export function Keyboard({
           ))}
           {rowIndex === 2 ? (
             <button
-              className="h-12 min-w-12 rounded-md bg-key px-1 text-xs font-black uppercase text-key-foreground transition hover:bg-surface-border"
+              aria-label="Delete letter"
+              className="game-control h-12 min-w-12 rounded-md bg-key px-1 text-xs font-black uppercase text-key-foreground transition hover:bg-surface-border"
+              disabled={disabled}
               onClick={onDelete}
               type="button"
             >

@@ -29,15 +29,12 @@ const OPTIONAL_CACHE_REQUESTS = OPTIONAL_APP_SHELL_URLS.map(
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches
-      .open(APP_SHELL_CACHE)
-      .then(async (cache) => {
-        await cache.addAll(REQUIRED_CACHE_REQUESTS);
-        await Promise.allSettled(
-          OPTIONAL_CACHE_REQUESTS.map((request) => cache.add(request)),
-        );
-      })
-      .then(() => self.skipWaiting()),
+    caches.open(APP_SHELL_CACHE).then(async (cache) => {
+      await cache.addAll(REQUIRED_CACHE_REQUESTS);
+      await Promise.allSettled(
+        OPTIONAL_CACHE_REQUESTS.map((request) => cache.add(request)),
+      );
+    }),
   );
 });
 
@@ -92,6 +89,11 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    event.waitUntil(self.skipWaiting());
+    return;
+  }
+
   if (event.data?.type !== "CACHE_STATIC_URLS") {
     return;
   }
