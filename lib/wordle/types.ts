@@ -6,6 +6,18 @@ export type PuzzleStatus = "playing" | "won" | "lost";
 
 export type KeyboardFeedback = Partial<Record<string, TileFeedback>>;
 
+export type RevealPresentationState = {
+  rowIndex: number;
+  visibleTileCount: number;
+  isRevealing: boolean;
+  completedRowIndex: number | null;
+};
+
+export type AppUpdateNotice = {
+  isUpdateAvailable: boolean;
+  isUpdateApplying: boolean;
+};
+
 export type LocalPlayerProfile = {
   nickname: string;
   createdAt: string;

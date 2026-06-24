@@ -76,6 +76,12 @@ explicit approval.
 
 Run this only if adjacent correct-tile grouped highlight is implemented.
 
+Status for this implementation: deferred. The must-have reveal sequencing,
+correct/present emphasis, solved-row emphasis, focus-visible styling, and
+reduced-motion behavior were prioritized. A contiguous adjacent-tile highlight
+should be revisited only if it can be added without positional fragility,
+layout shifts, overlap, or weaker focus indicators.
+
 1. Submit or inspect a row with adjacent correct-position letters.
 2. Confirm adjacent correct tiles are wrapped by one contiguous highlight.
 3. Confirm the highlight does not shift the grid, overlap text, or clip at mobile or desktop widths.

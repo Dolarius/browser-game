@@ -13,6 +13,31 @@ export function ServiceWorkerRegister() {
     }
 
     let isMounted = true;
+    let refreshing = false;
+    let waitingWorker: ServiceWorker | null = null;
+
+    function notifyUpdateAvailable(worker: ServiceWorker) {
+      waitingWorker = worker;
+      window.dispatchEvent(new Event("daily-wordle-update-available"));
+    }
+
+    function applyUpdate() {
+      if (!waitingWorker) {
+        window.location.reload();
+        return;
+      }
+
+      waitingWorker.postMessage({ type: "SKIP_WAITING" });
+    }
+
+    function handleControllerChange() {
+      if (refreshing) {
+        return;
+      }
+
+      refreshing = true;
+      window.location.reload();
+    }
 
     async function registerServiceWorker() {
       try {
@@ -27,6 +52,28 @@ export function ServiceWorkerRegister() {
 
         await navigator.serviceWorker.ready;
         cacheCurrentStaticAssets(registration);
+
+        if (registration.waiting) {
+          notifyUpdateAvailable(registration.waiting);
+        }
+
+        registration.addEventListener("updatefound", () => {
+          const installingWorker = registration.installing;
+
+          if (!installingWorker) {
+            return;
+          }
+
+          installingWorker.addEventListener("statechange", () => {
+            if (
+              installingWorker.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              notifyUpdateAvailable(installingWorker);
+            }
+          });
+        });
+
         registration.update().catch(() => {
           // A failed update check should not block the already-cached app shell.
         });
@@ -36,9 +83,19 @@ export function ServiceWorkerRegister() {
     }
 
     registerServiceWorker();
+    window.addEventListener("daily-wordle-apply-update", applyUpdate);
+    navigator.serviceWorker.addEventListener(
+      "controllerchange",
+      handleControllerChange,
+    );
 
     return () => {
       isMounted = false;
+      window.removeEventListener("daily-wordle-apply-update", applyUpdate);
+      navigator.serviceWorker.removeEventListener(
+        "controllerchange",
+        handleControllerChange,
+      );
     };
   }, []);
 

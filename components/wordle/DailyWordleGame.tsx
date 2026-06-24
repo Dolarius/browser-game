@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getDisplayDate, getLocalDateKey } from "@/lib/wordle/date";
 import {
   coercePuzzleForToday,
@@ -23,6 +23,7 @@ import type {
   DailyPuzzleState,
   LocalPlayerProfile,
   LocalPlayerStats,
+  RevealPresentationState,
   StorageFailure,
 } from "@/lib/wordle/types";
 import { GameHeader } from "./GameHeader";
@@ -34,6 +35,31 @@ import { StatsPlaceholder } from "./StatsPlaceholder";
 
 type LoadState = "loading" | "ready" | "storage-error";
 
+const REVEAL_STEP_MS = 260;
+const REVEAL_SETTLE_MS = 220;
+
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() =>
+    typeof window === "undefined"
+      ? false
+      : window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    function handleChange(event: MediaQueryListEvent) {
+      setPrefersReducedMotion(event.matches);
+    }
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  return prefersReducedMotion;
+}
+
 export function DailyWordleGame() {
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [storageError, setStorageError] = useState<StorageFailure | null>(null);
@@ -43,13 +69,36 @@ export function DailyWordleGame() {
   const [activeGuess, setActiveGuess] = useState("");
   const [message, setMessage] = useState("");
   const [isStatsOpen, setIsStatsOpen] = useState(false);
+  const [revealState, setRevealState] =
+    useState<RevealPresentationState | null>(null);
+  const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
+  const [isUpdateApplying, setIsUpdateApplying] = useState(false);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const dateKey = useMemo(() => getLocalDateKey(), []);
   const dateLabel = useMemo(() => getDisplayDate(), []);
+  const visibleGuesses = useMemo(() => {
+    if (!puzzle || !revealState?.isRevealing) {
+      return puzzle?.guesses ?? [];
+    }
+
+    return puzzle.guesses.map((guess, rowIndex) => {
+      if (rowIndex !== revealState.rowIndex) {
+        return guess;
+      }
+
+      return {
+        ...guess,
+        feedback: guess.feedback.slice(0, revealState.visibleTileCount),
+      };
+    });
+  }, [puzzle, revealState]);
   const keyboardFeedback = useMemo(
-    () => getKeyboardFeedback(puzzle?.guesses ?? []),
-    [puzzle?.guesses],
+    () => getKeyboardFeedback(visibleGuesses),
+    [visibleGuesses],
   );
+  const isRevealInProgress = revealState?.isRevealing ?? false;
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -104,6 +153,69 @@ export function DailyWordleGame() {
     });
   }, [dateKey]);
 
+  useEffect(() => {
+    function handleUpdateAvailable() {
+      setIsUpdateAvailable(true);
+      setIsUpdateApplying(false);
+    }
+
+    window.addEventListener("daily-wordle-update-available", handleUpdateAvailable);
+
+    return () =>
+      window.removeEventListener(
+        "daily-wordle-update-available",
+        handleUpdateAvailable,
+      );
+  }, []);
+
+  useEffect(() => {
+    if (!revealState?.isRevealing) {
+      return;
+    }
+
+    if (prefersReducedMotion) {
+      const reducedMotionTimer = window.setTimeout(() => {
+        setRevealState({
+          rowIndex: revealState.rowIndex,
+          visibleTileCount: WORD_LENGTH,
+          isRevealing: false,
+          completedRowIndex: revealState.rowIndex,
+        });
+      }, 1);
+
+      return () => window.clearTimeout(reducedMotionTimer);
+    }
+
+    if (revealState.visibleTileCount >= WORD_LENGTH) {
+      const settleTimer = window.setTimeout(() => {
+        setRevealState({
+          rowIndex: revealState.rowIndex,
+          visibleTileCount: WORD_LENGTH,
+          isRevealing: false,
+          completedRowIndex: revealState.rowIndex,
+        });
+      }, REVEAL_SETTLE_MS);
+
+      return () => window.clearTimeout(settleTimer);
+    }
+
+    const revealTimer = window.setTimeout(() => {
+      setRevealState((current) =>
+        current?.isRevealing && current.rowIndex === revealState.rowIndex
+          ? {
+              ...current,
+              visibleTileCount: Math.min(
+                current.visibleTileCount + 1,
+                WORD_LENGTH,
+              ),
+            }
+          : current,
+      );
+    }, REVEAL_STEP_MS);
+
+    return () => window.clearTimeout(revealTimer);
+  }, [prefersReducedMotion, revealState]);
+
   const handleSaveProfile = useCallback(
     (nickname: string) => {
       const nextProfile = {
@@ -133,6 +245,10 @@ export function DailyWordleGame() {
 
   const addLetter = useCallback(
     (letter: string) => {
+      if (isRevealInProgress) {
+        return;
+      }
+
       if (puzzle?.status !== "playing") {
         setMessage("Today's puzzle is already complete.");
         return;
@@ -148,19 +264,27 @@ export function DailyWordleGame() {
         return `${current}${letter.toUpperCase()}`;
       });
     },
-    [puzzle],
+    [isRevealInProgress, puzzle],
   );
 
   const deleteLetter = useCallback(() => {
+    if (isRevealInProgress) {
+      return;
+    }
+
     if (puzzle?.status !== "playing") {
       return;
     }
 
     setActiveGuess((current) => current.slice(0, -1));
     setMessage("");
-  }, [puzzle]);
+  }, [isRevealInProgress, puzzle]);
 
   const submitActiveGuess = useCallback(() => {
+    if (isRevealInProgress) {
+      return;
+    }
+
     if (!puzzle) {
       return;
     }
@@ -197,14 +321,41 @@ export function DailyWordleGame() {
 
     setPuzzle(result.state);
     setActiveGuess("");
+    setRevealState({
+      rowIndex: result.state.guesses.length - 1,
+      visibleTileCount: prefersReducedMotion ? WORD_LENGTH : 0,
+      isRevealing: !prefersReducedMotion,
+      completedRowIndex: prefersReducedMotion ? result.state.guesses.length - 1 : null,
+    });
     setMessage(
       result.state.status === "won"
         ? "Solved."
         : result.state.status === "lost"
           ? `The answer was ${result.state.answer}.`
-          : "Guess accepted.",
+        : "Guess accepted.",
     );
-  }, [activeGuess, puzzle, stats]);
+  }, [activeGuess, isRevealInProgress, prefersReducedMotion, puzzle, stats]);
+
+  const openStats = useCallback(() => {
+    returnFocusRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    setIsStatsOpen(true);
+  }, []);
+
+  const closeStats = useCallback(() => {
+    setIsStatsOpen(false);
+    window.requestAnimationFrame(() => {
+      returnFocusRef.current?.focus();
+      returnFocusRef.current = null;
+    });
+  }, []);
+
+  const applyUpdate = useCallback(() => {
+    setIsUpdateApplying(true);
+    window.dispatchEvent(new Event("daily-wordle-apply-update"));
+  }, []);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -281,10 +432,17 @@ export function DailyWordleGame() {
     <section className="flex w-full max-w-140 flex-col items-center gap-4">
       <GameHeader
         dateLabel={dateLabel}
+        isUpdateApplying={isUpdateApplying}
+        isUpdateAvailable={isUpdateAvailable}
         nickname={profile.nickname}
-        onOpenStats={() => setIsStatsOpen(true)}
+        onApplyUpdate={applyUpdate}
+        onOpenStats={openStats}
       />
-      <GuessGrid activeGuess={activeGuess} guesses={puzzle.guesses} />
+      <GuessGrid
+        activeGuess={activeGuess}
+        guesses={puzzle.guesses}
+        revealState={revealState}
+      />
       <p
         aria-live="polite"
         className="min-h-6 text-center text-sm font-semibold text-page-foreground"
@@ -293,6 +451,7 @@ export function DailyWordleGame() {
       </p>
       <ResultPanel puzzle={puzzle} />
       <Keyboard
+        disabled={isRevealInProgress}
         feedback={keyboardFeedback}
         onDelete={deleteLetter}
         onLetter={addLetter}
@@ -300,7 +459,7 @@ export function DailyWordleGame() {
       />
       {isStatsOpen ? (
         <StatsPlaceholder
-          onClose={() => setIsStatsOpen(false)}
+          onClose={closeStats}
           stats={stats}
         />
       ) : null}
